@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:ctx="http://www.springframework.org/schema/context"       
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+
+    <ctx:component-scan base-package="com.*" />
+    <ctx:annotation-config />
+    <mvc:annotation-driven />
+    <jee:jndi-lookup id="ds" jndi-name="jdbc/__default" resource-ref="true"/>
+    <!-- ADD PERSISTENCE SUPPORT HERE (jpa, hibernate, etc) -->
+    
+    <bean id="vendorAdapterInj" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="true" />                    
+    </bean>    
+    
+    <bean id="entityMgrFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="demoPersistence" />
+        <property name="dataSource" ref="ds" />
+        <property name="jpaVendorAdapter" ref="vendorAdapterInj" />        
+    </bean>
+    
+    <bean id="txMgr" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityMgrFactory" />
+    </bean>
+    
+    <tx:annotation-driven transaction-manager="txMgr" />
+    
+</beans>
